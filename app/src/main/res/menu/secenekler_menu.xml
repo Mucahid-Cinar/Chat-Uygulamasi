@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+
+        android:id="@+id/arkasbul_secenegi"
+        android:title="Kullanıcı Ekle"
+        app:showAsAction="never"
+        >
+
+
+    </item>
+    <item
+
+        android:id="@+id/grupolustur_secenegi"
+        android:title="Grup Oluştur"
+        app:showAsAction="never"
+        >
+
+
+    </item>
+    <item
+
+        android:id="@+id/ayarlar_secenegi"
+        android:title="Hesap"
+        app:showAsAction="never"
+        >
+
+
+    </item>
+    <item
+
+        android:id="@+id/cıkısyap_secenegi"
+        android:title="ÇIKIŞ"
+        app:showAsAction="never"
+        >
+
+
+    </item>
+
+</menu>

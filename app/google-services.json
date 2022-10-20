@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "755720296120",
+    "project_id": "mm-chat-b385c",
+    "storage_bucket": "mm-chat-b385c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:755720296120:android:155bef1ee79c54c6f5464d",
+        "android_client_info": {
+          "package_name": "com.mucahid.mm_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "755720296120-jt7b7sqn7tc0j4f1sbr62iiquat1kp3n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSTA3XSVZxCgL4CWfbNheNgW0hrIADB7w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "755720296120-jt7b7sqn7tc0j4f1sbr62iiquat1kp3n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

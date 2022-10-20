@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable-anydpi/ic_photo.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable-hdpi/ic_baseline_phone_black_android_24.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/buton.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/buttons.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/custom_button.xml" value="0.2552083333333333" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/girdiler.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/ic_baseline_email_25.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/ic_baseline_group_24.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/ic_baseline_local_phone_24.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/ic_baseline_message_24.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/ic_baseline_phone_android_24.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/ic_baseline_send_24.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/ic_sharp_person_search_24.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/kullanici_arkaplan.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/mesaj_arkaplan.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/drawable/profil_cerceve.xml" value="0.14756944444444445" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/activity_arkadas_bul.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/activity_ayarlar.xml" value="0.22" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/activity_chat.xml" value="0.22" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/activity_grup_chat.xml" value="0.25" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/activity_kayit.xml" value="0.25" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/activity_login.xml" value="0.25" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/activity_main.xml" value="0.21784420289855072" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/activity_profile.xml" value="0.25" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/activity_telefongiris.xml" value="0.25" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/app_bar_layout.xml" value="0.2957427536231884" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/chat_bar.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/fragment_chats.xml" value="0.2957427536231884" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/fragment_chats2.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/fragment_grup.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/fragment_istekler.xml" value="0.121875" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/fragment_kisiler.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/grup_olustur_alert_dialog.xml" value="0.33" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/kullanici_ekle_layout.xml" value="0.25" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/kullanici_mesaj.xml" value="0.25" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/mesaj.xml" value="0.25" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/myview.xml" value="0.3432971014492754" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/myview1.xml" value="0.3432971014492754" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/myview2.xml" value="0.3432971014492754" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/myview3.xml" value="0.121875" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/ozel_mesaj_alan.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/layout/ozel_mesaj_gonderen.xml" value="0.24444444444444444" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/menu/secenekler_menu.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.3828125" />
+        <entry key="..\:/Users/Muco/AndroidStudioProjects/MM_Chat/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3828125" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

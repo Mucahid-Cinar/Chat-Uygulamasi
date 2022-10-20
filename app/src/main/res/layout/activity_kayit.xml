@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".KayitActivity"
+    android:background="@drawable/loginbg1"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="90dp"
+        android:layout_gravity="center"
+        android:src="@drawable/logo200"
+
+         />
+    <!-- android:src="@drawable/logo"-->
+
+
+    <EditText
+        android:id="@+id/kayit_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="50dp"
+        android:background="@drawable/girdiler"
+        android:drawableStart="@drawable/ic_baseline_email_25"
+        android:hint="  E-posta"
+        android:inputType="textEmailAddress"
+        android:padding="8dp"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/kayit_sifre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="50dp"
+        android:background="@drawable/girdiler"
+        android:drawableStart="@drawable/ic_baseline_lock_25"
+        android:hint="  Şifre"
+        android:inputType="textPassword"
+        android:padding="8dp"
+        android:textSize="20sp" />
+
+
+
+    <Button
+        android:id="@+id/kayit_buton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="50dp"
+        android:background="@drawable/buton"
+        android:padding="10dp"
+        android:text="KAYDOL"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/hesabım_var"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="15dp"
+        android:text="Zaten bir hesabınız var mı?"
+        android:textStyle="bold"
+        android:padding="8dp"
+        android:textSize="15sp" />
+
+</LinearLayout>

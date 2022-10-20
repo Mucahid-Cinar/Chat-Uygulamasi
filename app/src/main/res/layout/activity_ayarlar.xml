@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AyarlarActivity"
+    android:background="@drawable/background2">
+
+    <include
+        android:id="@+id/toolbar1"
+        layout="@layout/app_bar_layout"
+        >
+    </include>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/kullanici_foto_ayarlar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:padding="15dp"
+        android:src="@drawable/userphoto200px"
+        app:civ_border_color="#737373"
+        app:civ_border_width="5px" />
+    <LinearLayout
+        android:layout_below="@+id/kullanici_foto_ayarlar"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ad_soyad">
+
+        <EditText
+            android:id="@+id/gercek_ad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/girdiler"
+            android:hint="Adınız"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:inputType="textMultiLine"
+            android:padding="8dp"
+            android:textAlignment="center"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/gercek_soyad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:layout_below="@+id/kullanici_foto_ayarlar"
+            android:background="@drawable/girdiler"
+            android:hint="Soyadınız"
+            android:inputType="textMultiLine"
+            android:padding="8dp"
+            android:textAlignment="center"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+
+
+    <EditText
+        android:id="@+id/kullanici_adi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ad_soyad"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="50dp"
+        android:background="@drawable/girdiler"
+        android:drawableStart="@drawable/ic_baseline_person_24"
+        android:hint="Kullanıcı Adı"
+        android:inputType="textMultiLine"
+        android:padding="8dp"
+        android:textAlignment="center"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/kullanici_durumu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginLeft="50dp"
+        android:padding="8dp"
+        android:layout_below="@+id/kullanici_adi"
+        android:hint="Hakkımda"
+        android:inputType="textMultiLine"
+        android:textAlignment="center"
+        android:drawableStart="@drawable/ic_baseline_textsms_24"
+        android:textStyle="bold"
+        android:background="@drawable/girdiler"
+        />
+
+
+    <Button
+        android:id="@+id/ayarlar_guncelle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/kullanici_durumu"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="50dp"
+        android:background="@drawable/buton"
+        android:padding="8dp"
+        android:text="KAYDET"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+
+</RelativeLayout>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="7dp"
+    android:gravity="center_horizontal"
+    android:background="@drawable/kullanici_arkaplan">
+
+    <TextView
+        android:id="@+id/grup_olustur_ad_yazdır"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:text="Grup Adı"
+        android:layout_marginBottom="15dp"
+        />
+
+    <EditText
+        android:id="@+id/grupAdı"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/blue"
+        android:padding="7dp"
+        android:hint="Grup Adını Giriniz..."/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/iptalBtn"
+            android:layout_width="85dp"
+            android:layout_height="40dp"
+            android:text="İptal"
+            android:textAllCaps="false"
+            android:layout_margin="7dp"
+            android:textColor="@android:color/white"
+            android:background="@drawable/buton"/>
+
+        <Button
+            android:id="@+id/olusturBtn"
+            android:layout_width="85dp"
+            android:layout_height="40dp"
+            android:textAllCaps="false"
+            android:text="Oluştur"
+            android:layout_margin="7dp"
+            android:textColor="@color/white"
+            android:background="@drawable/buton"/>
+
+    </LinearLayout>
+
+</LinearLayout>
