@@ -1,0 +1,105 @@
+{
+  "rules": {
+    "Users": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        "uid": { ".validate": "newData.val() === $uid" },
+        "username": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50" },
+        "firstName": { ".validate": "newData.isString() && newData.val().length <= 100" },
+        "lastName": { ".validate": "newData.isString() && newData.val().length <= 100" },
+        "about": { ".validate": "newData.isString() && newData.val().length <= 500" },
+        "image": { ".validate": "newData.isString() && newData.val().length <= 2000" },
+        "publicKey": { ".validate": "newData.isString() && newData.val().length <= 2000" },
+        "userState": {
+          "state": { ".validate": "newData.val() === 'online' || newData.val() === 'offline'" },
+          "lastSeen": { ".validate": "newData.isNumber() && newData.val() <= now" },
+          "$field": { ".validate": false }
+        },
+        "$field": { ".validate": false }
+      }
+    },
+
+    "GroupNames": {
+      ".read": "auth != null",
+      "$name": {
+        ".write": "auth != null && !data.exists() && newData.exists()",
+        ".validate": "newData.isNumber()"
+      }
+    },
+
+    "Groups": {
+      "$name": {
+        ".read": "auth != null",
+        "$messageId": {
+          ".write": "auth != null && !data.exists() && root.child('GroupNames').child($name).exists()",
+          ".validate": "newData.hasChildren(['username', 'userId', 'message', 'date', 'time']) && newData.child('userId').val() === auth.uid && newData.child('username').val() === root.child('Users').child(auth.uid).child('username').val()",
+          "message": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 4000" },
+          "date": { ".validate": "newData.isString() && newData.val().length <= 20" },
+          "time": { ".validate": "newData.isString() && newData.val().length <= 10" },
+          "username": { ".validate": "newData.isString()" },
+          "userId": { ".validate": "newData.isString()" },
+          "$field": { ".validate": false }
+        }
+      }
+    },
+
+    "Messages": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$other": {
+          ".write": "auth != null && auth.uid === $uid && !newData.exists()",
+          "$messageId": {
+            ".write": "auth != null && (auth.uid === $uid || auth.uid === $other) && !data.exists() && root.child('Contacts').child($uid).child($other).exists()",
+            ".validate": "newData.hasChildren(['from', 'message', 'type', 'time']) && newData.child('from').val() === auth.uid",
+            "from": { ".validate": "newData.isString()" },
+            "message": { ".validate": "newData.isString() && newData.val().length <= 20000" },
+            "type": { ".validate": "newData.val() === 'text'" },
+            "time": { ".validate": "newData.isString() && newData.val().length <= 10" },
+            "$field": { ".validate": false }
+          }
+        }
+      }
+    },
+
+    "Chats": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".indexOn": ["lastMessageAt"],
+        "$other": {
+          ".write": "auth != null && ((auth.uid === $uid && !newData.exists()) || ((auth.uid === $uid || auth.uid === $other) && newData.exists() && root.child('Contacts').child($uid).child($other).exists()))",
+          ".validate": "newData.hasChildren(['lastMessageAt'])",
+          "lastMessageAt": { ".validate": "newData.val() === now" },
+          "$field": { ".validate": false }
+        }
+      }
+    },
+
+    "Contacts": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$other": {
+          ".write": "auth != null && ((auth.uid === $uid && (!newData.exists() || root.child('ChatRequests').child($uid).child($other).child('requestType').val() === 'received')) || (auth.uid === $other && (!newData.exists() || root.child('ChatRequests').child($other).child($uid).child('requestType').val() === 'received')))",
+          ".validate": "newData.hasChildren(['status'])",
+          "status": { ".validate": "newData.val() === 'saved'" },
+          "$field": { ".validate": false }
+        }
+      }
+    },
+
+    "ChatRequests": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".indexOn": ["requestType"],
+        "$other": {
+          ".write": "auth != null && (auth.uid === $uid || auth.uid === $other)",
+          ".validate": "newData.hasChildren(['requestType'])",
+          "requestType": {
+            ".validate": "(auth.uid === $uid && newData.val() === 'sent') || (auth.uid === $other && newData.val() === 'received')"
+          },
+          "$field": { ".validate": false }
+        }
+      }
+    }
+  }
+}

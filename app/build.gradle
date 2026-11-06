@@ -4,49 +4,65 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    namespace 'com.mucahid.mm_chat'
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.mucahid.mm_chat"
-        minSdk 21
-        targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        minSdk 23
+        targetSdk 35
+        versionCode 2
+        versionName "2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Firebase Local Emulator Suite (see EMULATOR.md). Off unless -PuseFirebaseEmulator=true.
+        buildConfigField "boolean", "USE_FIREBASE_EMULATOR", "false"
+        buildConfigField "String", "FIREBASE_EMULATOR_HOST",
+                "\"${project.findProperty('firebaseEmulatorHost') ?: '127.0.0.1'}\""
     }
 
     buildTypes {
+        debug {
+            buildConfigField "boolean", "USE_FIREBASE_EMULATOR",
+                    "${project.findProperty('useFirebaseEmulator') ?: 'false'}"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
-    buildFeatures{viewBinding = true}
+    buildFeatures {
+        viewBinding true
+        buildConfig true
+    }
 }
 
 dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.activity:activity:1.10.1'
+    implementation 'androidx.lifecycle:lifecycle-process:2.8.7'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
+    implementation 'androidx.viewpager2:viewpager2:1.1.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
 
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.browser:browser:1.2.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
-    implementation 'com.google.firebase:firebase-database:20.0.2'
-    implementation 'com.google.firebase:firebase-auth:21.0.1'
-    implementation 'com.firebaseui:firebase-ui-database:8.0.1'
-    implementation 'com.google.firebase:firebase-core:21.0.0'
-    implementation 'com.google.firebase:firebase-messaging:22.0.0'
-    implementation 'com.google.firebase:firebase-storage:20.0.1'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
-    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
-    testImplementation 'junit:junit:'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation platform('com.google.firebase:firebase-bom:33.12.0')
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-storage'
+    implementation 'com.firebaseui:firebase-ui-database:8.0.2'
+
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.vanniktech:android-image-cropper:4.6.0'
+    implementation 'com.google.crypto.tink:tink-android:1.24.0'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 }

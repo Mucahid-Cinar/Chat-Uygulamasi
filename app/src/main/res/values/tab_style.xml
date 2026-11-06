@@ -1,0 +1,1 @@
+<resources><style name="Me.Tab" parent="TextAppearance.Design.Tab"><item name="android:textSize">11sp</item><item name="android:textAllCaps">false</item><item name="android:fontFamily">sans-serif-medium</item></style></resources>

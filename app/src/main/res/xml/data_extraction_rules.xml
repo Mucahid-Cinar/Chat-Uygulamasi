@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12 and higher; see backup_rules.xml for why the E2EE keyset is excluded. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="me_chat_e2ee.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="me_chat_e2ee.xml" />
+    </device-transfer>
+</data-extraction-rules>

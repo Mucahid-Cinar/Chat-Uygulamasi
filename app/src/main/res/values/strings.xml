@@ -1,5 +1,14 @@
 <resources>
-    <string name="app_name">MM_Chat</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">ME Chat</string>
+
+    <!-- Turkish overrides for the image cropper library (com.vanniktech:android-image-cropper) -->
+    <string name="crop_image_menu_crop">KIRP</string>
+    <string name="pick_image_chooser_title">Kaynak Seçin</string>
+    <string name="pick_image_camera">Kamera</string>
+    <string name="pick_image_gallery">Galeri</string>
+    <string name="ic_rotate_right_24">Döndür</string>
+    <string name="ic_rotate_left_24">Sola döndür</string>
+    <string name="ic_flip_24">Çevir</string>
+    <string name="ic_flip_24_horizontally">Yatay çevir</string>
+    <string name="ic_flip_24_vertically">Dikey çevir</string>
 </resources>

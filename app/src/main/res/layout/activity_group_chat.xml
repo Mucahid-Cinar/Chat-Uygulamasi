@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GroupChatActivity">
+    <include
+        android:id="@+id/group_chat_toolbar"
+        layout="@layout/app_bar_layout"></include>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/group_messages_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/group_chat_toolbar"
+        android:layout_above="@+id/group_chat_input_container"
+        android:background="@color/background_grey"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:clipToPadding="false" />
+    <LinearLayout
+        android:id="@+id/group_chat_input_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/white"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+        <EditText
+            android:id="@+id/group_chat_message_input"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:padding="14dp"
+            android:background="@drawable/bg_input"
+            android:hint="@string/ui_activity_group_chat_hint_1"
+            android:inputType="textCapSentences|textMultiLine"
+            android:minHeight="52dp"
+            android:maxLines="5"
+            android:maxLength="4000"></EditText>
+        <ImageButton
+            android:layout_gravity="center"
+            android:id="@+id/group_chat_send_button"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_button"
+            android:src="@drawable/ic_baseline_send_24"
+            app:tint="@color/white"
+            android:padding="14dp"
+            android:layout_marginStart="10dp"
+            android:contentDescription="@string/ui_activity_group_chat_contentdescription_2"></ImageButton>
+    </LinearLayout>
+</RelativeLayout>

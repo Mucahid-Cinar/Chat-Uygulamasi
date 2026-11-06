@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and lower. The E2EE keyset is encrypted with an Android Keystore key, which is never
+     backed up; a restored keyset could not be decrypted, so it must not be backed up either. -->
+<full-backup-content>
+    <exclude domain="sharedpref" path="me_chat_e2ee.xml" />
+</full-backup-content>

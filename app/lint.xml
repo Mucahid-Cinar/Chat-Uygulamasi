@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Picasso ships a notification helper that this app never uses. -->
+    <issue id="NotificationPermission">
+        <ignore regexp="com\.squareup\.picasso" />
+    </issue>
+</lint>

@@ -1,344 +1,233 @@
 package com.mucahid.mm_chat;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.mucahid.mm_chat.Model.User;
 import com.mucahid.mm_chat.databinding.ActivityProfileBinding;
-import com.squareup.picasso.Picasso;
-
-import java.util.HashMap;
-import java.util.Iterator;
+import com.mucahid.mm_chat.model.User;
+import com.mucahid.mm_chat.util.ChatRequestActions;
+import com.mucahid.mm_chat.util.Db;
+import com.mucahid.mm_chat.util.ImageLoader;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    String kullaniciId = "";
-    private DatabaseReference kullaniciYolu,sohbetTalebiYolu,sohbetlerYolu,bildirirmYolu;
-    private FirebaseAuth mmYetki;
+    private enum RelationState { NEW, REQUEST_SENT, REQUEST_RECEIVED, FRIENDS }
+
     private ActivityProfileBinding binding;
-    private String aktifDurum,aktifKullaniciId;
-    private Button istekGonderBtn,istekDegerlendirBtn;
+    private DatabaseReference rootRef;
+
+    private DatabaseReference requestRef;
+    private DatabaseReference contactRef;
+    private ValueEventListener requestListener;
+    private ValueEventListener contactListener;
+
+    private String currentUserId;
+    private String profileUserId;
+    private RelationState state = RelationState.NEW;
+
+    // Latest values from the two listeners; the buttons stay disabled until both have arrived.
+    private boolean requestLoaded;
+    private boolean contactLoaded;
+    private String requestType;
+    private boolean isContact;
+    private boolean actionInProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityProfileBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        setContentView(view);
+        setContentView(binding.getRoot());
+        binding.profileToolbar.getRoot().setTitle("Profil");
+        binding.profileToolbar.getRoot().setNavigationIcon(R.drawable.ic_baseline_arrow_back_24);
+        binding.profileToolbar.getRoot().setNavigationOnClickListener(v -> finish());
 
-        istekGonderBtn = binding.mesajIstegiGonder;
-        istekDegerlendirBtn = binding.mesajIstegiDegerlendirme;
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        profileUserId = getIntent().getStringExtra(Db.EXTRA_USER_ID);
+        if (currentUser == null || TextUtils.isEmpty(profileUserId)) {
+            finish();
+            return;
+        }
 
-        kullaniciId = getIntent().getStringExtra("kullaniciId");
-        sohbetTalebiYolu = FirebaseDatabase.getInstance().getReference().child("Sohbet Talebi");
-        sohbetlerYolu = FirebaseDatabase.getInstance().getReference().child("Sohbetler");
-        bildirirmYolu = FirebaseDatabase.getInstance().getReference().child("Bildirimler");
-        mmYetki = FirebaseAuth.getInstance();
-        aktifDurum = "Yeni";
-        aktifKullaniciId = mmYetki.getCurrentUser().getUid();
+        rootRef = Db.database().getReference();
+        currentUserId = currentUser.getUid();
 
-        if (!kullaniciId.isEmpty())
-            KullaniciGetir(kullaniciId);
+        loadUser();
+
+        if (currentUserId.equals(profileUserId)) {
+            binding.messageRequestButton.setVisibility(View.GONE);
+        } else {
+            binding.messageRequestButton.setEnabled(false);
+            binding.messageRequestButton.setOnClickListener(v -> onRequestButtonClicked());
+            binding.declineMessageRequestButton.setOnClickListener(v ->
+                    runAction(ChatRequestActions.cancelRequest(currentUserId, profileUserId), null));
+            listenRelation();
+        }
     }
 
-    private void KullaniciGetir(String kullaniciId){
-        kullaniciYolu = FirebaseDatabase.getInstance().getReference("Kullanicilar");
-        kullaniciYolu.child(kullaniciId).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Iterator iteretor = dataSnapshot.getChildren().iterator();
-
-                while (iteretor.hasNext()){
-                    User user = new User(
-                            (((DataSnapshot) iteretor.next()).getValue()).toString(),
-                            (((DataSnapshot) iteretor.next()).getValue().toString()),
-                            (((DataSnapshot) iteretor.next()).getValue().toString()),
-                            (((DataSnapshot) iteretor.next()).getValue().toString()),
-                            (((DataSnapshot) iteretor.next()).getValue().toString()),
-                            (((DataSnapshot) iteretor.next()).getValue().toString()),
-                            (((DataSnapshot) iteretor.next()).getValue().toString())
-                    );
-
-                    if (user.getResim().isEmpty()) {
-                        binding.kullaniciFotoAyarlar.setImageResource(R.drawable.userphoto200px);
-                    } else{
-                        Picasso.get().load(user.getResim()).resize(500, 500).into(binding.kullaniciFotoAyarlar);
-                    }
-
-                    //Picasso.get().load(user.getResim()).resize(500, 500).into(binding.kullaniciFotoAyarlar);
-
-                    Uygula(user);
-
-                    mesajIstegiGonder();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (requestRef != null && requestListener != null) {
+            requestRef.removeEventListener(requestListener);
+        }
+        if (contactRef != null && contactListener != null) {
+            contactRef.removeEventListener(contactListener);
+        }
     }
 
-    private void mesajIstegiGonder() {
-
-        sohbetTalebiYolu.child(aktifKullaniciId).addValueEventListener(new ValueEventListener() {
+    private void loadUser() {
+        rootRef.child(Db.USERS).child(profileUserId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                if(snapshot.hasChild(kullaniciId)){
-
-                    String talep_turu = snapshot.child(kullaniciId).child("talep_turu").getValue().toString();
-
-                    if(talep_turu.equals("Gonderildi")){
-                        aktifDurum = "talep_gonderildi";
-                        istekGonderBtn.setText("Mesaj İsteği İptal");
-                    }
-                    else{
-                        aktifDurum = "talep_alindi";
-                        istekGonderBtn.setText("Mesaj İsteği Kabul");
-                        istekDegerlendirBtn.setVisibility(View.VISIBLE);
-                        istekDegerlendirBtn.setEnabled(true);
-
-                        istekDegerlendirBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                IstegiİptalEt();
-                            }
-                        });
-                    }
+                if (!snapshot.hasChildren()) {
+                    return;
                 }
-
-                else{
-
-                    sohbetlerYolu.child(aktifKullaniciId).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                            if(snapshot.hasChild(kullaniciId)){
-
-                                aktifDurum = "Arkadaş";
-                                istekGonderBtn.setText("Sohbeti Sil");
-
-                            }
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-
+                User user = snapshot.getValue(User.class);
+                if (user == null) {
+                    return;
                 }
-
+                ImageLoader.loadProfileImage(user.getImage(), binding.userPhoto);
+                binding.userFirstNameDisplay.setText(user.getFirstName());
+                binding.userLastNameDisplay.setText(user.getLastName());
+                binding.userNameDisplay.setText(user.getUsername());
+                binding.userStatusDisplay.setText(user.getAbout());
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
 
+    private void listenRelation() {
+        requestRef = rootRef.child(Db.CHAT_REQUESTS).child(currentUserId).child(profileUserId);
+        requestListener = requestRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                requestType = snapshot.child(Db.REQUEST_TYPE).getValue(String.class);
+                requestLoaded = true;
+                render();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                showLoadError();
             }
         });
 
-        if (aktifKullaniciId.equals(kullaniciId))
-            istekGonderBtn.setVisibility(View.INVISIBLE);
-        else{
-            istekGonderBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    istekGonderBtn.setEnabled(false);
+        contactRef = rootRef.child(Db.CONTACTS).child(currentUserId).child(profileUserId);
+        contactListener = contactRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                isContact = snapshot.exists();
+                contactLoaded = true;
+                render();
+            }
 
-                    if(aktifDurum.equals("Yeni")){
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                showLoadError();
+            }
+        });
+    }
 
-                        sohbetTalebiGonder();
+    private void showLoadError() {
+        Toast.makeText(this, "Hata", Toast.LENGTH_LONG).show();
+    }
 
-                        Toast.makeText(ProfileActivity.this, "Mesaj İsteği Gönderildi", Toast.LENGTH_LONG).show();
+    private void render() {
+        if (!requestLoaded || !contactLoaded) {
+            return;
+        }
 
-                    }
-                    if(aktifDurum.equals("talep_gonderildi")){
-                        IstegiİptalEt();
-                    }
-                    if(aktifDurum.equals("talep_alindi")){
-                        IstegiKabulEt();
-                    }
-                    if(aktifDurum.equals("Arkadaş")){
-                        OzelSohbetiSil();
-                    }
+        if (Db.REQUEST_SENT.equals(requestType)) {
+            state = RelationState.REQUEST_SENT;
+        } else if (Db.REQUEST_RECEIVED.equals(requestType)) {
+            state = RelationState.REQUEST_RECEIVED;
+        } else if (isContact) {
+            state = RelationState.FRIENDS;
+        } else {
+            state = RelationState.NEW;
+        }
 
-                }
-            });
+        boolean showDecline = state == RelationState.REQUEST_RECEIVED;
+        binding.declineMessageRequestButton.setVisibility(showDecline ? View.VISIBLE : View.GONE);
+        binding.declineMessageRequestButton.setEnabled(showDecline && !actionInProgress);
+        binding.messageRequestButton.setEnabled(!actionInProgress);
+
+        switch (state) {
+            case REQUEST_SENT:
+                binding.messageRequestButton.setText("Mesaj İsteği İptal");
+                break;
+            case REQUEST_RECEIVED:
+                binding.messageRequestButton.setText("Mesaj İsteği Kabul");
+                break;
+            case FRIENDS:
+                binding.messageRequestButton.setText("Sohbeti Sil");
+                break;
+            case NEW:
+            default:
+                binding.messageRequestButton.setText("İSTEK GÖNDER");
+                break;
         }
     }
 
-    private void OzelSohbetiSil() {
+    private void onRequestButtonClicked() {
+        switch (state) {
+            case NEW:
+                runAction(ChatRequestActions.sendRequest(currentUserId, profileUserId), "Mesaj İsteği Gönderildi");
+                break;
+            case REQUEST_SENT:
+                runAction(ChatRequestActions.cancelRequest(currentUserId, profileUserId), null);
+                break;
+            case REQUEST_RECEIVED:
+                runAction(ChatRequestActions.acceptRequest(currentUserId, profileUserId), null);
+                break;
+            case FRIENDS:
+                confirmRemoveContact();
+                break;
+        }
+    }
 
-        sohbetlerYolu.child(aktifKullaniciId).child(kullaniciId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
+    /** Removing a contact also deletes your copy of the conversation, so ask first. */
+    private void confirmRemoveContact() {
+        new AlertDialog.Builder(this)
+                .setTitle("Sohbeti Sil")
+                .setMessage("Bu kişi kişilerinizden çıkarılacak ve sizdeki mesaj geçmişi silinecek. "
+                        + "Bu işlem geri alınamaz.")
+                .setPositiveButton("Sil", (d, w) ->
+                        runAction(ChatRequestActions.removeContact(currentUserId, profileUserId), null))
+                .setNegativeButton("Vazgeç", null)
+                .show();
+    }
 
-                if(task.isSuccessful()){
-                    sohbetlerYolu.child(kullaniciId).child(aktifKullaniciId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-
-                            if(task.isSuccessful()){
-
-                                istekGonderBtn.setEnabled(true);
-                                aktifDurum = "Yeni";
-                                istekGonderBtn.setText("İSTEK GÖNDER");
-
-                                istekDegerlendirBtn.setVisibility(View.INVISIBLE);
-                                istekDegerlendirBtn.setEnabled(false);
-
-                            }
-                        }
-                    });
+    /** Buttons are disabled while the write runs; the listeners update the UI afterwards. */
+    private void runAction(Task<Void> action, String successMessage) {
+        actionInProgress = true;
+        render();
+        action.addOnCompleteListener(task -> {
+            actionInProgress = false;
+            if (task.isSuccessful()) {
+                if (successMessage != null) {
+                    Toast.makeText(ProfileActivity.this, successMessage, Toast.LENGTH_LONG).show();
                 }
+            } else {
+                Toast.makeText(ProfileActivity.this, "Hata", Toast.LENGTH_LONG).show();
             }
+            render();
         });
-    }
-
-    private void IstegiKabulEt() {
-
-        sohbetlerYolu.child(aktifKullaniciId).child(kullaniciId).child("Sohbetler").setValue("Kaydedildi")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-
-                        if(task.isSuccessful()){
-
-                            sohbetlerYolu.child(kullaniciId).child(aktifKullaniciId).child("Sohbetler").setValue("Kaydedildi")
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-
-                                            if(task.isSuccessful()){
-
-                                                sohbetTalebiYolu.child(aktifKullaniciId).child(kullaniciId).removeValue()
-                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<Void> task) {
-
-                                                                if(task.isSuccessful()){
-
-                                                                    sohbetTalebiYolu.child(kullaniciId).child(aktifKullaniciId).removeValue()
-                                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                                @Override
-                                                                                public void onComplete(@NonNull Task<Void> task) {
-
-                                                                                    istekGonderBtn.setEnabled(true);
-                                                                                    aktifDurum = "Arkadaş";
-                                                                                    istekGonderBtn.setText("Sohbeti Sil");
-                                                                                    istekDegerlendirBtn.setVisibility(View.INVISIBLE);
-
-                                                                                }
-                                                                            });
-                                                                }
-                                                            }
-                                                        });
-                                            }
-                                        }
-                                    });
-                        }
-                    }
-                });
-
-    }
-
-    private void IstegiİptalEt() {
-
-        sohbetTalebiYolu.child(aktifKullaniciId).child(kullaniciId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-
-                if(task.isSuccessful()){
-                    sohbetTalebiYolu.child(kullaniciId).child(aktifKullaniciId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-
-                            if(task.isSuccessful()){
-
-                                istekGonderBtn.setEnabled(true);
-                                aktifDurum = "Yeni";
-                                istekGonderBtn.setText("İSTEK GÖNDER");
-
-                                istekDegerlendirBtn.setVisibility(View.INVISIBLE);
-                                istekDegerlendirBtn.setEnabled(false);
-
-                            }
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    private void sohbetTalebiGonder() {
-
-        sohbetTalebiYolu.child(aktifKullaniciId).child(kullaniciId).child("talep_turu").setValue("Gonderildi")
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-
-                        if(task.isSuccessful()){
-                            sohbetTalebiYolu.child(kullaniciId).child(aktifKullaniciId).child("talep_turu").setValue("Alindi")
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-
-                                        HashMap<String ,String> mesajBildirimMap = new HashMap<>();
-                                        mesajBildirimMap.put("Kimden",aktifKullaniciId);
-                                        mesajBildirimMap.put("Tur","Talep");
-
-                                        bildirirmYolu.child(kullaniciId).push().setValue(mesajBildirimMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-
-                                                if(task.isSuccessful()){
-
-                                                    istekGonderBtn.setEnabled(true);
-                                                    aktifDurum = "talep_gonderildi";
-                                                    istekGonderBtn.setText("Mesaj isteği iptal");
-
-                                                }
-
-                                            }
-                                        });
-
-
-                                    }
-                                }
-                            });
-                        }
-
-                    }
-                });
-
-    }
-
-
-    private void Uygula(User user){
-        binding.kullaniciGercekadiGoster.setText(user.getAd());
-        binding.kullaniciGerceksoyadiGoster.setText(user.getSoyad());
-        binding.kullaniciAdiGoster.setText(user.getKullaniciAdi());
-        binding.kullaniciDurumuGoster.setText(user.getHakkimda());
     }
 }

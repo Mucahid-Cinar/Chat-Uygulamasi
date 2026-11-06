@@ -1,139 +1,107 @@
 package com.mucahid.mm_chat;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.cloudmessaging.CloudMessagingReceiver;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceIdReceiver;
-import com.google.firebase.installations.FirebaseInstallations;
-import com.google.firebase.messaging.FirebaseMessaging;
+import com.mucahid.mm_chat.util.E2eeManager;
+import com.mucahid.mm_chat.util.LoadingDialog;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private Button girisButon, telefonGirisButon;
-    private EditText kullaniciEmail, kullaniciSifre;
-    private TextView yeniHesap,sifreUnutma;
+    private EditText emailInput;
+    private EditText passwordInput;
 
-    private FirebaseAuth mYetki;
-    private DatabaseReference kullaniciYolu;
-
-    ProgressDialog girisDialog;
+    private FirebaseAuth auth;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        girisButon=findViewById(R.id.giris_buton);
-        telefonGirisButon=findViewById(R.id.telefon_giris);
-        kullaniciEmail=findViewById(R.id.giris_email);
-        kullaniciSifre=findViewById(R.id.giris_sifre);
-        yeniHesap=findViewById(R.id.yeni_hesap);
-        sifreUnutma=findViewById(R.id.sifre_unutma);
+        Button loginButton = findViewById(R.id.login_button);
+        Button phoneLoginButton = findViewById(R.id.phone_login_button);
+        TextView createAccount = findViewById(R.id.create_account);
+        TextView forgotPassword = findViewById(R.id.forgot_password);
+        emailInput = findViewById(R.id.login_email);
+        passwordInput = findViewById(R.id.login_password);
 
-        girisDialog = new ProgressDialog(this);
+        loadingDialog = new LoadingDialog(this);
+        auth = FirebaseAuth.getInstance();
 
-        mYetki = FirebaseAuth.getInstance();
-        kullaniciYolu = FirebaseDatabase.getInstance().getReference().child("Kullanicilar");
+        createAccount.setOnClickListener(v ->
+                startActivity(new Intent(LoginActivity.this, RegisterActivity.class)));
 
-        yeniHesap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent kayitAktivityIntent=new Intent(LoginActivity.this,KayitActivity.class);
-                startActivity(kayitAktivityIntent);
-            }
-        });
+        loginButton.setOnClickListener(v -> signIn());
 
-        girisButon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                GirisİzniVer();
-            }
-        });
+        forgotPassword.setOnClickListener(v -> sendPasswordReset());
 
-        telefonGirisButon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent telefonGiris = new Intent(LoginActivity.this,Telefongiris.class);
-                startActivity(telefonGiris);
-
-            }
-        });
-
+        phoneLoginButton.setOnClickListener(v ->
+                startActivity(new Intent(LoginActivity.this, PhoneLoginActivity.class)));
     }
 
-    private void GirisİzniVer() {
-
-        String email = kullaniciEmail.getText().toString();
-        String sifre = kullaniciSifre.getText().toString();
-
-        if(TextUtils.isEmpty(email)){
-
-            Toast.makeText(this, "E-posta kısmı boş olamaz", Toast.LENGTH_SHORT).show();
-
-        }
-        if(TextUtils.isEmpty(sifre)){
-
-            Toast.makeText(this, "Şifre kısmı boş olamaz", Toast.LENGTH_SHORT).show();
-
-        }
-        else {
-
-            girisDialog.setTitle("Giriş Yapılıyor");
-            girisDialog.setMessage("Lütfen Bekleyiniz");
-            girisDialog.setCanceledOnTouchOutside(true);
-            girisDialog.show();
-
-            mYetki.signInWithEmailAndPassword(email,sifre)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-
-                            if(task.isSuccessful()){
-
-                                Intent anaSayfa = new Intent(LoginActivity.this,MainActivity.class);
-                                anaSayfa.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(anaSayfa);
-                                finish();
-                                Toast.makeText(LoginActivity.this, "Giriş Başarılı", Toast.LENGTH_SHORT).show();
-                                girisDialog.dismiss();
-
-                            }
-                            else {
-
-                                Toast.makeText(LoginActivity.this, "E-posta veya Şifre Hatalı", Toast.LENGTH_SHORT).show();
-                                girisDialog.dismiss();
-
-                            }
-
-                        }
-                    });
-
+    private void sendPasswordReset() {
+        String email = emailInput.getText().toString().trim();
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailInput.setError("Geçerli bir e-posta adresi giriniz");
+            emailInput.requestFocus();
+            return;
         }
 
+        loadingDialog.show("Şifre Sıfırlama", "Lütfen Bekleyiniz");
+        auth.sendPasswordResetEmail(email).addOnCompleteListener(this, task -> {
+            loadingDialog.dismiss();
+            if (task.isSuccessful()) {
+                Toast.makeText(LoginActivity.this, "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(LoginActivity.this, "Şifre sıfırlama e-postası gönderilemedi", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        loadingDialog.dismiss();
+    }
 
-    private void KullaniciyiAnaActivityeGonder() {
-        Intent AnaActivityIntent = new Intent(LoginActivity.this,MainActivity.class);
-        startActivity(AnaActivityIntent);
+    private void signIn() {
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString();
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailInput.setError("Geçerli bir e-posta adresi giriniz");
+            emailInput.requestFocus();
+            return;
+        }
+        if (TextUtils.isEmpty(password)) {
+            passwordInput.setError("Şifre kısmı boş olamaz");
+            passwordInput.requestFocus();
+            return;
+        }
+
+        loadingDialog.show("Giriş Yapılıyor", "Lütfen Bekleyiniz");
+
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
+            loadingDialog.dismiss();
+            if (task.isSuccessful()) {
+                E2eeManager.onSignedIn(LoginActivity.this, auth.getCurrentUser().getUid());
+                Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
+                mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(mainIntent);
+                finish();
+                Toast.makeText(LoginActivity.this, "Giriş Başarılı", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(LoginActivity.this, "E-posta veya Şifre Hatalı", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

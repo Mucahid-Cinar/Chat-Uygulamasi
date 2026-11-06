@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_grey">
+    <include
+        android:id="@+id/settings_toolbar"
+        layout="@layout/app_bar_layout" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_photo"
+                android:layout_width="112dp"
+                android:layout_height="112dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_avatar"
+                android:contentDescription="@string/ui_activity_settings_contentdescription_1"
+                app:civ_border_color="@color/white"
+                app:civ_border_width="4dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Me.Link"
+                android:text="@string/ui_activity_settings_text_2" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Me.Title"
+                android:text="@string/ui_activity_settings_text_3" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Me.Body"
+                android:text="@string/ui_activity_settings_text_4" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Me.Label"
+                android:text="@string/ui_activity_settings_text_5" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Me.Input"
+                android:id="@+id/first_name"
+                android:hint="@string/ui_activity_settings_hint_6"
+                android:inputType="textPersonName"
+                android:maxLength="50" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Me.Input"
+                android:id="@+id/last_name"
+                android:hint="@string/ui_activity_settings_hint_7"
+                android:inputType="textPersonName"
+                android:maxLength="50" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Me.Input"
+                android:id="@+id/user_name"
+                android:hint="@string/ui_activity_settings_hint_8"
+                android:inputType="text"
+                android:maxLength="40" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Me.Input"
+                android:id="@+id/about_input"
+                android:hint="@string/ui_activity_settings_hint_9"
+                android:inputType="textMultiLine"
+                android:singleLine="false"
+                android:maxLines="4"
+                android:maxLength="160" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Me.Button"
+                android:id="@+id/settings_update_button"
+                android:text="@string/ui_activity_settings_text_10" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
